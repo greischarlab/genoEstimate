@@ -1,0 +1,41 @@
+Package: estimatePMR
+Title: Estimate Parasite Multiplication Rates
+Version: 1.0.1
+Authors@R: c(
+    person("Lucas A.", "Nell", , "lucnell@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3209-0517")),
+    person("Zhenying", "Chen", , "zc527@cornell.edu", role = "aut",
+           comment = c(ORCID = "0009-0005-9769-2369")),
+    person("Megan", "Greischar", , "megan.greischar@cornell.edu", role = "aut",
+           comment = c(ORCID = "0000-0002-7521-9344"))
+  )
+Description: This package uses a "winnowing" optimization approach to estimate
+    Parasite Multiplication Rates (PMRs) for malaria parasites based on data.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+ByteCompile: true
+Depends:
+    R (>= 4.1.0)
+LinkingTo: 
+    BH,
+    Rcpp,
+    RcppArmadillo
+Imports: 
+    cli,
+    Rcpp
+Suggests:
+    mirai
+SystemRequirements: GNU make
+NeedsCompilation: yes
+URL: https://github.com/greischarlab/estimatePMR
+BugReports: https://github.com/greischarlab/estimatePMR/issues
+RemoteType: github
+RemoteHost: api.github.com
+RemoteRepo: estimatePMR
+RemoteUsername: greischarlab
+GithubRepo: estimatePMR
+GithubUsername: greischarlab
+VignetteBuilder: quarto
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
