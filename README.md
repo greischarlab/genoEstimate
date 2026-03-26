@@ -12,7 +12,7 @@ To cite this package, use the following DOI:
 To install this package:
 
 ```r
-remotes::install_github("greischarlab/genotype_estimate")
+remotes::install_github("greischarlab/genoEstimate")
 ```
 
 
