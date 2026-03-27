@@ -441,7 +441,7 @@ one_optim_step <- function(k,
 #' # If your objective function is from a package or relies on function(s)
 #' # from package(s), you should attach those packages for all child processes
 #' # using `mirai::everywhere`. Code for loading this package would be:
-#' # everywhere({ library(estimatePMR) })
+#' # everywhere({ library(genoEstimate) })
 #'
 #' # When the objective function doesn't rely on global variables or user-defined
 #' # functions, then you can just run it with `multithread = TRUE`:

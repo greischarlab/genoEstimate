@@ -12,7 +12,7 @@
 #' @export
 #'
 beta_starts <- function(shape, offset, total0, compartments) {
-    .Call(`_estimatePMR_beta_starts`, shape, offset, total0, compartments)
+    .Call(`_genoEstimate_beta_starts`, shape, offset, total0, compartments)
 }
 
 #' Run ODE for constant PMR and gamma N.
@@ -27,7 +27,7 @@ beta_starts <- function(shape, offset, total0, compartments) {
 #' @return Numeric matrix where rows are time and columns are stages.
 #'
 constPMR_gammaN_ode <- function(x0, cycleLength, mu, museq, R, n, inflec, max_t, dt) {
-    .Call(`_estimatePMR_constPMR_gammaN_ode`, x0, cycleLength, mu, museq, R, n, inflec, max_t, dt)
+    .Call(`_genoEstimate_constPMR_gammaN_ode`, x0, cycleLength, mu, museq, R, n, inflec, max_t, dt)
 }
 
 #' Extract parameters.
@@ -35,7 +35,7 @@ constPMR_gammaN_ode <- function(x0, cycleLength, mu, museq, R, n, inflec, max_t,
 #' @export
 #'
 extract_parms <- function(parms, I0 = NA_real_, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_) {
-    .Call(`_estimatePMR_extract_parms`, parms, I0, pfCycleLength, inflec, ring_duration)
+    .Call(`_genoEstimate_extract_parms`, parms, I0, pfCycleLength, inflec, ring_duration)
 }
 
 #' Main optimization function for model with 5-8 parameters.
@@ -71,6 +71,6 @@ extract_parms <- function(parms, I0 = NA_real_, pfCycleLength = NA_real_, inflec
 #' @export
 #'
 archer_fitN_odeint <- function(parms, data, geno, I0 = NA_real_, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, circ_return = FALSE, seq_return = FALSE, ring_prop_return = FALSE, output_full_return = FALSE) {
-    .Call(`_estimatePMR_archer_fitN_odeint`, parms, data, geno, I0, pfCycleLength, inflec, ring_duration, circ_return, seq_return, ring_prop_return, output_full_return)
+    .Call(`_genoEstimate_archer_fitN_odeint`, parms, data, geno, I0, pfCycleLength, inflec, ring_duration, circ_return, seq_return, ring_prop_return, output_full_return)
 }
 

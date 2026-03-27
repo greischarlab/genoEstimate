@@ -1,5 +1,5 @@
 ## usethis namespace: start
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib estimatePMR, .registration = TRUE
+#' @useDynLib genoEstimate, .registration = TRUE
 ## usethis namespace: end
 NULL

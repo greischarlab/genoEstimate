@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // beta_starts
 NumericVector beta_starts(const double& shape, const double& offset, const double& total0, const int& compartments);
-RcppExport SEXP _estimatePMR_beta_starts(SEXP shapeSEXP, SEXP offsetSEXP, SEXP total0SEXP, SEXP compartmentsSEXP) {
+RcppExport SEXP _genoEstimate_beta_starts(SEXP shapeSEXP, SEXP offsetSEXP, SEXP total0SEXP, SEXP compartmentsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -27,7 +27,7 @@ END_RCPP
 }
 // constPMR_gammaN_ode
 arma::mat constPMR_gammaN_ode(const std::vector<double>& x0, const double& cycleLength, const double& mu, const double& museq, const double& R, const int& n, const double& inflec, const double& max_t, const double& dt);
-RcppExport SEXP _estimatePMR_constPMR_gammaN_ode(SEXP x0SEXP, SEXP cycleLengthSEXP, SEXP muSEXP, SEXP museqSEXP, SEXP RSEXP, SEXP nSEXP, SEXP inflecSEXP, SEXP max_tSEXP, SEXP dtSEXP) {
+RcppExport SEXP _genoEstimate_constPMR_gammaN_ode(SEXP x0SEXP, SEXP cycleLengthSEXP, SEXP muSEXP, SEXP museqSEXP, SEXP RSEXP, SEXP nSEXP, SEXP inflecSEXP, SEXP max_tSEXP, SEXP dtSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -46,7 +46,7 @@ END_RCPP
 }
 // extract_parms
 NumericVector extract_parms(const NumericVector& parms, const double& I0, const double& pfCycleLength, const double& inflec, const double& ring_duration);
-RcppExport SEXP _estimatePMR_extract_parms(SEXP parmsSEXP, SEXP I0SEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP) {
+RcppExport SEXP _genoEstimate_extract_parms(SEXP parmsSEXP, SEXP I0SEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,7 +61,7 @@ END_RCPP
 }
 // archer_fitN_odeint
 SEXP archer_fitN_odeint(NumericVector parms, DataFrame data, const bool& geno, const double& I0, const double& pfCycleLength, const double& inflec, const double& ring_duration, const bool& circ_return, const bool& seq_return, const bool& ring_prop_return, const bool& output_full_return);
-RcppExport SEXP _estimatePMR_archer_fitN_odeint(SEXP parmsSEXP, SEXP dataSEXP, SEXP genoSEXP, SEXP I0SEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP circ_returnSEXP, SEXP seq_returnSEXP, SEXP ring_prop_returnSEXP, SEXP output_full_returnSEXP) {
+RcppExport SEXP _genoEstimate_archer_fitN_odeint(SEXP parmsSEXP, SEXP dataSEXP, SEXP genoSEXP, SEXP I0SEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP circ_returnSEXP, SEXP seq_returnSEXP, SEXP ring_prop_returnSEXP, SEXP output_full_returnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -82,14 +82,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_estimatePMR_beta_starts", (DL_FUNC) &_estimatePMR_beta_starts, 4},
-    {"_estimatePMR_constPMR_gammaN_ode", (DL_FUNC) &_estimatePMR_constPMR_gammaN_ode, 9},
-    {"_estimatePMR_extract_parms", (DL_FUNC) &_estimatePMR_extract_parms, 5},
-    {"_estimatePMR_archer_fitN_odeint", (DL_FUNC) &_estimatePMR_archer_fitN_odeint, 11},
+    {"_genoEstimate_beta_starts", (DL_FUNC) &_genoEstimate_beta_starts, 4},
+    {"_genoEstimate_constPMR_gammaN_ode", (DL_FUNC) &_genoEstimate_constPMR_gammaN_ode, 9},
+    {"_genoEstimate_extract_parms", (DL_FUNC) &_genoEstimate_extract_parms, 5},
+    {"_genoEstimate_archer_fitN_odeint", (DL_FUNC) &_genoEstimate_archer_fitN_odeint, 11},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_estimatePMR(DllInfo *dll) {
+RcppExport void R_init_genoEstimate(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

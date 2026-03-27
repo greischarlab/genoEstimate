@@ -1,6 +1,6 @@
-Package: estimatePMR
+Package: genoEstimate
 Title: Estimate Parasite Multiplication Rates
-Version: 1.0.1
+Version: 0.0.1
 Authors@R: c(
     person("Lucas A.", "Nell", , "lucnell@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3209-0517")),
@@ -28,13 +28,13 @@ Suggests:
     mirai
 SystemRequirements: GNU make
 NeedsCompilation: yes
-URL: https://github.com/greischarlab/estimatePMR
-BugReports: https://github.com/greischarlab/estimatePMR/issues
+URL: https://github.com/greischarlab/genoEstimate
+BugReports: https://github.com/greischarlab/genoEstimate/issues
 RemoteType: github
 RemoteHost: api.github.com
-RemoteRepo: estimatePMR
+RemoteRepo: genoEstimate
 RemoteUsername: greischarlab
-GithubRepo: estimatePMR
+GithubRepo: genoEstimate
 GithubUsername: greischarlab
 VignetteBuilder: quarto
 Roxygen: list(markdown = TRUE)
