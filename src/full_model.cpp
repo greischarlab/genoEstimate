@@ -223,13 +223,13 @@ SEXP archer_fitN_odeint(NumericVector parms,
 
     // calculate circ.iRBC.unique
     int numRows_u = subsetMatrix.n_rows;
-    arma::vec circ_iRBC_unique(numRows, arma::fill::zeros);
+    arma::vec circ_iRBC_unique(numRows_u, arma::fill::zeros);
     for (int j = 1; j < n + 1; ++j) {
         circ_iRBC_unique += subsetMatrix.col(j);
     }
 
     // calculate seq.iRBC.unique
-    arma::vec seq_iRBC_unique(numRows, arma::fill::zeros);
+    arma::vec seq_iRBC_unique(numRows_u, arma::fill::zeros);
     for (int j = n+1; j < 2*n + 1; ++j) {
         seq_iRBC_unique += subsetMatrix.col(j);
     }
