@@ -117,7 +117,7 @@ NumericVector extract_parms(const NumericVector& parms,
 
     ArcherInfo info = extract_parms_cpp(parms, start_age, pfCycleLength, inflec, ring_duration);
 
-    NumericVector fit_parms = {info.betaShape, info.offset, info.R, static_cast<double>(info.n),
+    NumericVector fit_parms = {info.betaShape, info.offset, info.R, static_cast<double>(info.n), info.I0,
                                info.start_age, info.pfCycleLength,
                                info.inflec, info.ring_duration};
 
