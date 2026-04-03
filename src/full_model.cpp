@@ -21,66 +21,51 @@ using namespace Rcpp;
 
 
 ArcherInfo extract_parms_cpp(const NumericVector& parms,
-                             const double& start_age,
                              const double& pfCycleLength,
                              const double& inflec,
                              const double& ring_duration) {
 
     ArcherInfo info;
 
-    if (parms.size() < 4) {
-        stop("parms must have length >= 4");
+    if (parms.size() < 5) {
+        stop("parms must have length >= 5");
     }
 
-    // param 1: betaShape [12, 200]
-    double varBetaDist1 = std::exp(-std::exp((parms[0])));
-    double varBetaDist = varBetaDist1 / 12;
-    double betaShape1 =  (1 / varBetaDist) - 4;
-    info.betaShape = betaShape1/8;
-    if (info.betaShape < 12) info.betaShape = 12;
-    if (info.betaShape > 200) info.betaShape = 200;
-
-    // param 2: offset [0, 0.5]
-    info.offset = std::exp(-std::exp(parms[1]));
+    // param 1: offset [0, 0.5]
+    info.offset = std::exp(-std::exp(parms[0]));
     if (info.offset < 0) info.offset = 0;
     if (info.offset > 0.5) info.offset = 0.5;
 
-    // param 3: R
-    info.R = std::exp((parms[2]));
+    // param 2: R
+    info.R = std::exp((parms[1]));
 
-    // param 4: n [4, 500]
-    double cv_cycleLength = std::exp(-std::exp(parms[3]));
+    // param 3: n [4, 500]
+    double cv_cycleLength = std::exp(-std::exp(parms[2]));
     double result = std::round(1.0 / (cv_cycleLength * cv_cycleLength));
     info.n = static_cast<int>(result);
     if (info.n < 4) info.n = 4;
     if (info.n > 500) info.n = 500;
 
-    // param 5: I0
-    info.I0 = std::exp((parms[4]));
+    // param 4: I0
+    info.I0 = std::exp((parms[3]));
+
+    // param 5: start age [0, 5]
+    double start_age1 = std::exp(-std::exp(parms[4]));
+    info.start_age = start_age1 * 5;
 
     int parms_idx = 5;
 
-    // param 6: start_age [0, 5]
-    if (Rcpp::NumericVector::is_na(start_age)) { // if there's no values specified for start_age
-        if (parms.size() <= parms_idx) { // if not proper length...
-            stop("Not enough items for start_age");
-        }
-        double start_age1 = std::exp(-std::exp(parms[parms_idx]));
-        info.start_age = start_age1 * 5; // then fit parms[5] for start_age
-        parms_idx++;
-    } else info.start_age = start_age;
-
-    // param 7: pfCycleLength [20, 28]
+    // param 6: pfCycleLength [20, 28]
     if (Rcpp::NumericVector::is_na(pfCycleLength)) { // if there's no values specified for pfCycleLength
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for pfCycleLength");
         }
         double pfCycleLength1 = std::exp(-std::exp(parms[parms_idx]));
-        info.pfCycleLength = pfCycleLength1 * 8.0 + 20.0; // then fit parms[6] for pfCycleLength
+        info.pfCycleLength = pfCycleLength1 * 8.0 + 20.0;
         parms_idx++;
     } else info.pfCycleLength = pfCycleLength;
 
-    // param 8: inflec [14, 22]
+    // param 7: inflec [14, 22]
     if (Rcpp::NumericVector::is_na(inflec)) {
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for inflec");
@@ -89,7 +74,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.inflec = inflec;
 
-    // param 9: ring_duration [3, 9]
+    // param 8: ring_duration [3, 9]
     if (Rcpp::NumericVector::is_na(ring_duration)) {
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for ring_duration");
@@ -110,16 +95,14 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
 //'
 //[[Rcpp::export]]
 NumericVector extract_parms(const NumericVector& parms,
-                            const double& start_age = NA_REAL,
                             const double& pfCycleLength = NA_REAL,
                             const double& inflec = NA_REAL,
                             const double& ring_duration = NA_REAL) {
 
-    ArcherInfo info = extract_parms_cpp(parms, start_age, pfCycleLength, inflec, ring_duration);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration);
 
-    NumericVector fit_parms = {info.betaShape, info.offset, info.R, static_cast<double>(info.n), info.I0,
-                               info.start_age, info.pfCycleLength,
-                               info.inflec, info.ring_duration};
+    NumericVector fit_parms = {info.offset, info.R, static_cast<double>(info.n), info.I0,
+                               info.start_age, info.pfCycleLength, info.inflec, info.ring_duration};
 
     return fit_parms;
 
@@ -165,7 +148,6 @@ NumericVector extract_parms(const NumericVector& parms,
 SEXP archer_fitN_odeint(NumericVector parms,
                         DataFrame data,
                         const bool& geno,
-                        const double& start_age = NA_REAL,
                         const double& pfCycleLength = NA_REAL,
                         const double& inflec = NA_REAL,
                         const double& ring_duration = NA_REAL,
@@ -174,10 +156,12 @@ SEXP archer_fitN_odeint(NumericVector parms,
                         const bool& ring_prop_return = false,
                         const bool& output_full_return = false) {
 
-    ArcherInfo info = extract_parms_cpp(parms, start_age, pfCycleLength, inflec, ring_duration);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration);
 
     int n = info.n;
     double n_dbl = n;
+
+    int betaShape = 200; // set shape parameter to 200
 
     // setting up initial conditions
     arma::vec ages(n);
@@ -185,7 +169,7 @@ SEXP archer_fitN_odeint(NumericVector parms,
 
     arma::vec ys = yfx(ages, info.inflec);
 
-    arma::vec startI0All = beta_starts_cpp(info.betaShape, info.offset, info.I0, info.n);
+    arma::vec startI0All = beta_starts_cpp(betaShape, info.offset, info.I0, info.n);
     std::vector<double> x0(2 * n);
     for (int i = 0; i < n; ++i) x0[i] = ys[i] * startI0All[i];
     for (int i = n; i < 2 * n; ++i) x0[i] = (1 - ys[i - n]) * startI0All[i - n];

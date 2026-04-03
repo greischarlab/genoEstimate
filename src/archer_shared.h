@@ -28,7 +28,6 @@ constexpr double p4 = 0.2242 * 2.0;      // Slope
 
 struct ArcherInfo {
 
-  double betaShape;
   double offset;
   double R;
   int n;

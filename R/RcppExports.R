@@ -34,8 +34,8 @@ constPMR_gammaN_ode <- function(x0, cycleLength, mu, museq, R, n, inflec, max_t,
 #'
 #' @export
 #'
-extract_parms <- function(parms, start_age = NA_real_, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_) {
-    .Call(`_genoEstimate_extract_parms`, parms, start_age, pfCycleLength, inflec, ring_duration)
+extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_) {
+    .Call(`_genoEstimate_extract_parms`, parms, pfCycleLength, inflec, ring_duration)
 }
 
 #' Main optimization function for model with 5-8 parameters.
@@ -70,7 +70,7 @@ extract_parms <- function(parms, start_age = NA_real_, pfCycleLength = NA_real_,
 #'
 #' @export
 #'
-archer_fitN_odeint <- function(parms, data, geno, start_age = NA_real_, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, circ_return = FALSE, seq_return = FALSE, ring_prop_return = FALSE, output_full_return = FALSE) {
-    .Call(`_genoEstimate_archer_fitN_odeint`, parms, data, geno, start_age, pfCycleLength, inflec, ring_duration, circ_return, seq_return, ring_prop_return, output_full_return)
+archer_fitN_odeint <- function(parms, data, geno, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, circ_return = FALSE, seq_return = FALSE, ring_prop_return = FALSE, output_full_return = FALSE) {
+    .Call(`_genoEstimate_archer_fitN_odeint`, parms, data, geno, pfCycleLength, inflec, ring_duration, circ_return, seq_return, ring_prop_return, output_full_return)
 }
 

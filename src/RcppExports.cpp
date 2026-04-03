@@ -45,30 +45,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // extract_parms
-NumericVector extract_parms(const NumericVector& parms, const double& start_age, const double& pfCycleLength, const double& inflec, const double& ring_duration);
-RcppExport SEXP _genoEstimate_extract_parms(SEXP parmsSEXP, SEXP start_ageSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP) {
+NumericVector extract_parms(const NumericVector& parms, const double& pfCycleLength, const double& inflec, const double& ring_duration);
+RcppExport SEXP _genoEstimate_extract_parms(SEXP parmsSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericVector& >::type parms(parmsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type start_age(start_ageSEXP);
     Rcpp::traits::input_parameter< const double& >::type pfCycleLength(pfCycleLengthSEXP);
     Rcpp::traits::input_parameter< const double& >::type inflec(inflecSEXP);
     Rcpp::traits::input_parameter< const double& >::type ring_duration(ring_durationSEXP);
-    rcpp_result_gen = Rcpp::wrap(extract_parms(parms, start_age, pfCycleLength, inflec, ring_duration));
+    rcpp_result_gen = Rcpp::wrap(extract_parms(parms, pfCycleLength, inflec, ring_duration));
     return rcpp_result_gen;
 END_RCPP
 }
 // archer_fitN_odeint
-SEXP archer_fitN_odeint(NumericVector parms, DataFrame data, const bool& geno, const double& start_age, const double& pfCycleLength, const double& inflec, const double& ring_duration, const bool& circ_return, const bool& seq_return, const bool& ring_prop_return, const bool& output_full_return);
-RcppExport SEXP _genoEstimate_archer_fitN_odeint(SEXP parmsSEXP, SEXP dataSEXP, SEXP genoSEXP, SEXP start_ageSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP circ_returnSEXP, SEXP seq_returnSEXP, SEXP ring_prop_returnSEXP, SEXP output_full_returnSEXP) {
+SEXP archer_fitN_odeint(NumericVector parms, DataFrame data, const bool& geno, const double& pfCycleLength, const double& inflec, const double& ring_duration, const bool& circ_return, const bool& seq_return, const bool& ring_prop_return, const bool& output_full_return);
+RcppExport SEXP _genoEstimate_archer_fitN_odeint(SEXP parmsSEXP, SEXP dataSEXP, SEXP genoSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP circ_returnSEXP, SEXP seq_returnSEXP, SEXP ring_prop_returnSEXP, SEXP output_full_returnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type parms(parmsSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type data(dataSEXP);
     Rcpp::traits::input_parameter< const bool& >::type geno(genoSEXP);
-    Rcpp::traits::input_parameter< const double& >::type start_age(start_ageSEXP);
     Rcpp::traits::input_parameter< const double& >::type pfCycleLength(pfCycleLengthSEXP);
     Rcpp::traits::input_parameter< const double& >::type inflec(inflecSEXP);
     Rcpp::traits::input_parameter< const double& >::type ring_duration(ring_durationSEXP);
@@ -76,7 +74,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool& >::type seq_return(seq_returnSEXP);
     Rcpp::traits::input_parameter< const bool& >::type ring_prop_return(ring_prop_returnSEXP);
     Rcpp::traits::input_parameter< const bool& >::type output_full_return(output_full_returnSEXP);
-    rcpp_result_gen = Rcpp::wrap(archer_fitN_odeint(parms, data, geno, start_age, pfCycleLength, inflec, ring_duration, circ_return, seq_return, ring_prop_return, output_full_return));
+    rcpp_result_gen = Rcpp::wrap(archer_fitN_odeint(parms, data, geno, pfCycleLength, inflec, ring_duration, circ_return, seq_return, ring_prop_return, output_full_return));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -84,8 +82,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_genoEstimate_beta_starts", (DL_FUNC) &_genoEstimate_beta_starts, 4},
     {"_genoEstimate_constPMR_gammaN_ode", (DL_FUNC) &_genoEstimate_constPMR_gammaN_ode, 9},
-    {"_genoEstimate_extract_parms", (DL_FUNC) &_genoEstimate_extract_parms, 5},
-    {"_genoEstimate_archer_fitN_odeint", (DL_FUNC) &_genoEstimate_archer_fitN_odeint, 11},
+    {"_genoEstimate_extract_parms", (DL_FUNC) &_genoEstimate_extract_parms, 4},
+    {"_genoEstimate_archer_fitN_odeint", (DL_FUNC) &_genoEstimate_archer_fitN_odeint, 10},
     {NULL, NULL, 0}
 };
 
