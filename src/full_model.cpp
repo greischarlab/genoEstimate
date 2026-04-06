@@ -23,7 +23,8 @@ using namespace Rcpp;
 ArcherInfo extract_parms_cpp(const NumericVector& parms,
                              const double& pfCycleLength,
                              const double& inflec,
-                             const double& ring_duration) {
+                             const double& ring_duration,
+                             const double& upper) {
 
     ArcherInfo info;
 
@@ -83,6 +84,15 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.ring_duration = ring_duration;
 
+    // param 9: upper bound [0.25, 1]
+    if (Rcpp::NumericVector::is_na(upper)) {
+        if (parms.size() <= parms_idx) { // if not upper bound...
+            stop("Not enough items for upper bound");
+        }
+        info.upper = std::exp(-std::exp(parms[parms_idx]))*0.75 + 0.25;
+        parms_idx++;
+    } else info.upper = upper;
+
 
     return info;
 
@@ -97,12 +107,13 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
 NumericVector extract_parms(const NumericVector& parms,
                             const double& pfCycleLength = NA_REAL,
                             const double& inflec = NA_REAL,
-                            const double& ring_duration = NA_REAL) {
+                            const double& ring_duration = NA_REAL,
+                            const double& upper = NA_REAL) {
 
-    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, upper);
 
     NumericVector fit_parms = {info.offset, info.R, static_cast<double>(info.n), info.I0,
-                               info.start_age, info.pfCycleLength, info.inflec, info.ring_duration};
+                               info.start_age, info.pfCycleLength, info.inflec, info.ring_duration, info.upper};
 
     return fit_parms;
 
@@ -121,13 +132,13 @@ NumericVector extract_parms(const NumericVector& parms,
 //'     then the function is fitting the data from O'Donnell et al., Parasite
 //'     Immunology, 2021; if set as true, then the function is fitting the data
 //'     from Prior et al., Scientifc Reports, 2019).
-//' @param start_age Single numeric indicating starting age of the ring stage.
-//'     Defaults to `NA`, which results in it being extracted from `parms`.
 //' @param pfCycleLength Single numeric indicating the cycle length.
 //'     Defaults to `NA`, which results in it being extracted from `parms`.
 //' @param inflec Single numeric indicating the inflection point.
 //'     Defaults to `NA`, which results in it being extracted from `parms`.
 //' @param ring_duration Single numeric indicating the ring duration.
+//'     Defaults to `NA`, which results in it being extracted from `parms`.
+//' @param upper Single numeric indicating the upper bound of the sequestration curve.
 //'     Defaults to `NA`, which results in it being extracted from `parms`.
 //' @param circ_return Single logical indicating whether to output
 //'     circulating iRBCs.
@@ -151,12 +162,13 @@ SEXP archer_fitN_odeint(NumericVector parms,
                         const double& pfCycleLength = NA_REAL,
                         const double& inflec = NA_REAL,
                         const double& ring_duration = NA_REAL,
+                        const double& upper = NA_REAL,
                         const bool& circ_return = false,
                         const bool& seq_return = false,
                         const bool& ring_prop_return = false,
                         const bool& output_full_return = false) {
 
-    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, upper);
 
     int n = info.n;
     double n_dbl = n;
@@ -167,7 +179,7 @@ SEXP archer_fitN_odeint(NumericVector parms,
     arma::vec ages(n);
     for (int i = 0; i < n; ++i) ages[i] = (i + 1) * info.pfCycleLength / n_dbl;
 
-    arma::vec ys = yfx(ages, info.inflec);
+    arma::vec ys = yfx(ages, info.inflec, info.upper);
 
     arma::vec startI0All = beta_starts_cpp(betaShape, info.offset, info.I0, info.n);
     std::vector<double> x0(2 * n);
@@ -187,7 +199,7 @@ SEXP archer_fitN_odeint(NumericVector parms,
     double dt = 0.1;
     arma::mat odeint_output = constPMR_gammaN_ode_cpp(x0, info.pfCycleLength,
                                                       0.0, 0.0, info.R, info.n,
-                                                      info.inflec, max_t, dt);
+                                                      info.inflec, info.upper, max_t, dt);
 
     // calculate circ.iRBC with high resolution
     int numRows = odeint_output.n_rows;

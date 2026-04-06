@@ -26,16 +26,16 @@ beta_starts <- function(shape, offset, total0, compartments) {
 #'
 #' @return Numeric matrix where rows are time and columns are stages.
 #'
-constPMR_gammaN_ode <- function(x0, cycleLength, mu, museq, R, n, inflec, max_t, dt) {
-    .Call(`_genoEstimate_constPMR_gammaN_ode`, x0, cycleLength, mu, museq, R, n, inflec, max_t, dt)
+constPMR_gammaN_ode <- function(x0, cycleLength, mu, museq, R, n, inflec, upper, max_t, dt) {
+    .Call(`_genoEstimate_constPMR_gammaN_ode`, x0, cycleLength, mu, museq, R, n, inflec, upper, max_t, dt)
 }
 
 #' Extract parameters.
 #'
 #' @export
 #'
-extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_) {
-    .Call(`_genoEstimate_extract_parms`, parms, pfCycleLength, inflec, ring_duration)
+extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, upper = NA_real_) {
+    .Call(`_genoEstimate_extract_parms`, parms, pfCycleLength, inflec, ring_duration, upper)
 }
 
 #' Main optimization function for model with 5-8 parameters.
@@ -47,13 +47,13 @@ extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ri
 #'     then the function is fitting the data from O'Donnell et al., Parasite
 #'     Immunology, 2021; if set as true, then the function is fitting the data
 #'     from Prior et al., Scientifc Reports, 2019).
-#' @param start_age Single numeric indicating starting age of the ring stage.
-#'     Defaults to `NA`, which results in it being extracted from `parms`.
 #' @param pfCycleLength Single numeric indicating the cycle length.
 #'     Defaults to `NA`, which results in it being extracted from `parms`.
 #' @param inflec Single numeric indicating the inflection point.
 #'     Defaults to `NA`, which results in it being extracted from `parms`.
 #' @param ring_duration Single numeric indicating the ring duration.
+#'     Defaults to `NA`, which results in it being extracted from `parms`.
+#' @param upper Single numeric indicating the upper bound of the sequestration curve.
 #'     Defaults to `NA`, which results in it being extracted from `parms`.
 #' @param circ_return Single logical indicating whether to output
 #'     circulating iRBCs.
@@ -70,7 +70,7 @@ extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ri
 #'
 #' @export
 #'
-archer_fitN_odeint <- function(parms, data, geno, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, circ_return = FALSE, seq_return = FALSE, ring_prop_return = FALSE, output_full_return = FALSE) {
-    .Call(`_genoEstimate_archer_fitN_odeint`, parms, data, geno, pfCycleLength, inflec, ring_duration, circ_return, seq_return, ring_prop_return, output_full_return)
+archer_fitN_odeint <- function(parms, data, geno, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, upper = NA_real_, circ_return = FALSE, seq_return = FALSE, ring_prop_return = FALSE, output_full_return = FALSE) {
+    .Call(`_genoEstimate_archer_fitN_odeint`, parms, data, geno, pfCycleLength, inflec, ring_duration, upper, circ_return, seq_return, ring_prop_return, output_full_return)
 }
 

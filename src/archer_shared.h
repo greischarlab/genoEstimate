@@ -20,7 +20,6 @@ using namespace Rcpp;
 
 // Define the values of all parameters used inside yfx.
 constexpr double p1 = 11.3869 / 467.6209; // Lower bound
-constexpr double p2 = 1.0;               // Upper bound
 constexpr double p4 = 0.2242 * 2.0;      // Slope
 
 
@@ -36,6 +35,7 @@ struct ArcherInfo {
   double pfCycleLength;
   double inflec;
   double ring_duration;
+  double upper;
 
 };
 
@@ -44,7 +44,7 @@ struct ArcherInfo {
 
 
 // Function to calculate yfx
-arma::vec yfx(const arma::vec& age, const double& inflec);
+arma::vec yfx(const arma::vec& age, const double& inflec, const double& upper);
 
 // Function to subset rows of a matrix and return a NumericMatrix
 arma::mat subsetRows(const arma::mat& input, const int& step, const bool& geno);
