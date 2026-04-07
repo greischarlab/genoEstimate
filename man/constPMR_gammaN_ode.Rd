@@ -4,7 +4,7 @@
 \alias{constPMR_gammaN_ode}
 \title{Run ODE for constant PMR and gamma N.}
 \usage{
-constPMR_gammaN_ode(x0, cycleLength, mu, museq, R, n, inflec, max_t, dt)
+constPMR_gammaN_ode(x0, cycleLength, mu, museq, R, n, inflec, upper, max_t, dt)
 }
 \arguments{
 \item{x0}{Initial conditions for all stages.}
