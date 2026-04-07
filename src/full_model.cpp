@@ -87,6 +87,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
     // param 9: upper bound [0.25, 1]
     if (Rcpp::NumericVector::is_na(upper)) {
         if (parms.size() <= parms_idx) { // if not proper length...
+            Rcpp::Rcout << "upper received: " << upper << std::endl;
             stop("Not enough items for upper bound");
         }
         info.upper = std::exp(-std::exp(parms[parms_idx]))*0.75 + 0.25;
