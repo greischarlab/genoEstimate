@@ -18,7 +18,7 @@ arma::mat constPMR_gammaN_ode_cpp(std::vector<double> x0,
                                   const double& R,
                                   const int& n,
                                   const double& inflec,
-                                  const double& upper,
+                                  const double& seq_upper,
                                   const double& max_t,
                                   const double& dt) {
 
@@ -30,7 +30,7 @@ arma::mat constPMR_gammaN_ode_cpp(std::vector<double> x0,
     if (x0.size() != (2*n)) stop("`x0` must be twice length as `n`");
 
     GreedyObserver<VecType> obs;
-    ConstantPMRgammaN system(cycleLength, mu, museq, R, n, inflec, upper);
+    ConstantPMRgammaN system(cycleLength, mu, museq, R, n, inflec, seq_upper);
 
     boost::numeric::odeint::integrate_const(
         VecStepperType(), std::ref(system),
@@ -71,12 +71,12 @@ arma::mat constPMR_gammaN_ode(const std::vector<double>& x0,
                               const double& R,
                               const int& n,
                               const double& inflec,
-                              const double& upper,
+                              const double& seq_upper,
                               const double& max_t,
                               const double& dt) {
 
     arma::mat out = constPMR_gammaN_ode_cpp(x0, cycleLength, mu, museq,
-                                            R, n, inflec, upper, max_t, dt);
+                                            R, n, inflec, seq_upper, max_t, dt);
 
     return out;
 

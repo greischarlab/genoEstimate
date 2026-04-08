@@ -7,13 +7,13 @@ using namespace Rcpp;
 
 
 // Function to calculate yfx
-arma::vec yfx(const arma::vec& age, const double& inflec, const double& upper) {
+arma::vec yfx(const arma::vec& age, const double& inflec, const double& seq_upper) {
   int n = age.size();
   arma::vec yVals(n);
 
   for (int i = 0; i < n; ++i) {
     // Use Rcpp's `pow` for element-wise calculation
-    yVals[i] = 1 - (p1 + ((upper - p1) / (1 + std::pow(10, p4 * (inflec - age[i])))));
+    yVals[i] = 1 - (p1 + ((seq_upper - p1) / (1 + std::pow(10, p4 * (inflec - age[i])))));
   }
   return yVals;
 }

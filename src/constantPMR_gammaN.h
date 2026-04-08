@@ -21,7 +21,7 @@ struct ConstantPMRgammaN {
     double lambdaN;     // Transition rate for non-sequestered iRBCs
     double lambdaS;     // Transition rate for sequestered iRBCs
     double inflec;
-    double upper;
+    double seq_upper;
     arma::vec qValues;
 
     ConstantPMRgammaN(const double& cycleLength_,
@@ -30,7 +30,7 @@ struct ConstantPMRgammaN {
                       const double& R_,
                       const double& n_,
                       const double& inflec_,
-                      const double& upper_)
+                      const double& seq_upper_)
         : cycleLength(cycleLength_),
           mu(mu_),
           museq(museq_),
@@ -39,15 +39,15 @@ struct ConstantPMRgammaN {
           lambdaN(n_ / cycleLength),
           lambdaS(lambdaN),
           inflec(inflec_),
-          upper(upper_),
+          seq_upper(seq_upper_),
           qValues(n, arma::fill::zeros) {
 
         double dt = 1 / lambdaN;
-        double yValue0 = yfx1(dt, inflec, upper);
+        double yValue0 = yfx1(dt, inflec, seq_upper);
         double yValue;
 
         for (uint32_t i = 1; i <= n; ++i) {
-            yValue = yfx1(dt + (i-1) * dt, inflec, upper);
+            yValue = yfx1(dt + (i-1) * dt, inflec, seq_upper);
             qValues(i-1) = 1 - yValue / yValue0; // Proportional change in yValues.
             yValue0 = yValue;
 
@@ -90,9 +90,9 @@ private:
     const double p1 = 11.3869/467.6209; // Lower bound
     const double p4 = 0.2242 * 2.0;       // Slope
 
-    double yfx1(const double& age, double inflec, double upper) const {
+    double yfx1(const double& age, double inflec, double seq_upper) const {
 
-        double yVal = 1 - (p1 + ((upper - p1) / (1 + std::pow(10, p4 * (inflec - age)))));
+        double yVal = 1 - (p1 + ((seq_upper - p1) / (1 + std::pow(10, p4 * (inflec - age)))));
 
         return yVal;
     }
@@ -109,7 +109,7 @@ arma::mat constPMR_gammaN_ode_cpp(std::vector<double> x0,
                                   const double& R,
                                   const int& n,
                                   const double& inflec,
-                                  const double& upper,
+                                  const double& seq_upper,
                                   const double& max_t,
                                   const double& dt);
 

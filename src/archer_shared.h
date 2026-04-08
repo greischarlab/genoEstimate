@@ -35,7 +35,7 @@ struct ArcherInfo {
   double pfCycleLength;
   double inflec;
   double ring_duration;
-  double upper;
+  double seq_upper;
 
 };
 
@@ -44,7 +44,7 @@ struct ArcherInfo {
 
 
 // Function to calculate yfx
-arma::vec yfx(const arma::vec& age, const double& inflec, const double& upper);
+arma::vec yfx(const arma::vec& age, const double& inflec, const double& seq_upper);
 
 // Function to subset rows of a matrix and return a NumericMatrix
 arma::mat subsetRows(const arma::mat& input, const int& step, const bool& geno);

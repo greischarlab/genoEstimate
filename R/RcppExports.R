@@ -26,16 +26,16 @@ beta_starts <- function(shape, offset, total0, compartments) {
 #'
 #' @return Numeric matrix where rows are time and columns are stages.
 #'
-constPMR_gammaN_ode <- function(x0, cycleLength, mu, museq, R, n, inflec, upper, max_t, dt) {
-    .Call(`_genoEstimate_constPMR_gammaN_ode`, x0, cycleLength, mu, museq, R, n, inflec, upper, max_t, dt)
+constPMR_gammaN_ode <- function(x0, cycleLength, mu, museq, R, n, inflec, seq_upper, max_t, dt) {
+    .Call(`_genoEstimate_constPMR_gammaN_ode`, x0, cycleLength, mu, museq, R, n, inflec, seq_upper, max_t, dt)
 }
 
 #' Extract parameters.
 #'
 #' @export
 #'
-extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, upper = NA_real_) {
-    .Call(`_genoEstimate_extract_parms`, parms, pfCycleLength, inflec, ring_duration, upper)
+extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, seq_upper = NA_real_) {
+    .Call(`_genoEstimate_extract_parms`, parms, pfCycleLength, inflec, ring_duration, seq_upper)
 }
 
 #' Main optimization function for model with 5-8 parameters.
@@ -53,7 +53,7 @@ extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ri
 #'     Defaults to `NA`, which results in it being extracted from `parms`.
 #' @param ring_duration Single numeric indicating the ring duration.
 #'     Defaults to `NA`, which results in it being extracted from `parms`.
-#' @param upper Single numeric indicating the upper bound of the sequestration curve.
+#' @param seq_upper Single numeric indicating the upper bound of the sequestration curve.
 #'     Defaults to `NA`, which results in it being extracted from `parms`.
 #' @param circ_return Single logical indicating whether to output
 #'     circulating iRBCs.
@@ -70,7 +70,7 @@ extract_parms <- function(parms, pfCycleLength = NA_real_, inflec = NA_real_, ri
 #'
 #' @export
 #'
-archer_fitN_odeint <- function(parms, data, geno, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, upper = NA_real_, circ_return = FALSE, seq_return = FALSE, ring_prop_return = FALSE, output_full_return = FALSE) {
-    .Call(`_genoEstimate_archer_fitN_odeint`, parms, data, geno, pfCycleLength, inflec, ring_duration, upper, circ_return, seq_return, ring_prop_return, output_full_return)
+archer_fitN_odeint <- function(parms, data, geno, pfCycleLength = NA_real_, inflec = NA_real_, ring_duration = NA_real_, seq_upper = NA_real_, circ_return = FALSE, seq_return = FALSE, ring_prop_return = FALSE, output_full_return = FALSE) {
+    .Call(`_genoEstimate_archer_fitN_odeint`, parms, data, geno, pfCycleLength, inflec, ring_duration, seq_upper, circ_return, seq_return, ring_prop_return, output_full_return)
 }
 
