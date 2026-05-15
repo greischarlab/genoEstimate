@@ -56,13 +56,13 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
 
     int parms_idx = 5;
 
-    // param 6: pfCycleLength [20, 28]
+    // param 6: pfCycleLength [22, 26]
     if (Rcpp::NumericVector::is_na(pfCycleLength)) { // if there's no values specified for pfCycleLength
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for pfCycleLength");
         }
         double pfCycleLength1 = std::exp(-std::exp(parms[parms_idx]));
-        info.pfCycleLength = pfCycleLength1 * 8.0 + 20.0;
+        info.pfCycleLength = pfCycleLength1 * 4.0 + 22.0;
         parms_idx++;
     } else info.pfCycleLength = pfCycleLength;
 
