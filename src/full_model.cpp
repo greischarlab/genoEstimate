@@ -54,9 +54,17 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
     double start_age1 = std::exp(-std::exp(parms[4]));
     info.start_age = start_age1 * 5;
 
-    int parms_idx = 5;
+    // param 6: betaShape
+    double varBetaDist1 = std::exp(-std::exp((parms[5])));
+    double varBetaDist = varBetaDist1 / 12;
+    double betaShape1 =  (1 / varBetaDist) - 4;
+    info.betaShape = betaShape1/8;
+    if (info.betaShape < 12) info.betaShape = 12;
+    if (info.betaShape > 200) info.betaShape = 200;
 
-    // param 6: pfCycleLength [22, 26]
+    int parms_idx = 6;
+
+    // param 7: pfCycleLength [22, 26]
     if (Rcpp::NumericVector::is_na(pfCycleLength)) { // if there's no values specified for pfCycleLength
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for pfCycleLength");
@@ -66,7 +74,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.pfCycleLength = pfCycleLength;
 
-    // param 7: inflec [14, 22]
+    // param 8: inflec [14, 22]
     if (Rcpp::NumericVector::is_na(inflec)) {
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for inflec");
@@ -75,7 +83,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.inflec = inflec;
 
-    // param 8: ring_duration [3, 9]
+    // param 9: ring_duration [3, 9]
     if (Rcpp::NumericVector::is_na(ring_duration)) {
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for ring_duration");
@@ -84,7 +92,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.ring_duration = ring_duration;
 
-    // param 9: sequestration curve upper bound [0.25, 1]
+    // param 10: sequestration curve upper bound [0.25, 1]
     if (Rcpp::NumericVector::is_na(seq_upper)) {
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for sequestration upper bound (p2)");
@@ -113,7 +121,8 @@ NumericVector extract_parms(const NumericVector& parms,
     ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper);
 
     NumericVector fit_parms = {info.offset, info.R, static_cast<double>(info.n), info.I0,
-                               info.start_age, info.pfCycleLength, info.inflec, info.ring_duration, info.seq_upper};
+                               info.start_age, info.betaShape, info.pfCycleLength, info.inflec,
+                               info.ring_duration, info.seq_upper};
 
     return fit_parms;
 
