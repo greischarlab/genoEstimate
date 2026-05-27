@@ -182,15 +182,13 @@ SEXP archer_fitN_odeint(NumericVector parms,
     int n = info.n;
     double n_dbl = n;
 
-    int betaShape = 200; // set shape parameter to 200
-
     // setting up initial conditions
     arma::vec ages(n);
     for (int i = 0; i < n; ++i) ages[i] = (i + 1) * info.pfCycleLength / n_dbl;
 
     arma::vec ys = yfx(ages, info.inflec, info.seq_upper);
 
-    arma::vec startI0All = beta_starts_cpp(betaShape, info.offset, info.I0, info.n);
+    arma::vec startI0All = beta_starts_cpp(info.betaShape, info.offset, info.I0, info.n);
     std::vector<double> x0(2 * n);
     for (int i = 0; i < n; ++i) x0[i] = ys[i] * startI0All[i];
     for (int i = n; i < 2 * n; ++i) x0[i] = (1 - ys[i - n]) * startI0All[i - n];
