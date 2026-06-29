@@ -32,7 +32,6 @@ struct ArcherInfo {
   int n;
   double I0;
   double start_age;
-  double betaShape;
   double pfCycleLength;
   double inflec;
   double ring_duration;
