@@ -75,12 +75,12 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.inflec = inflec;
 
-    // param 8: ring_duration [3, 9]
+    // param 8: ring_duration [1, 9]
     if (Rcpp::NumericVector::is_na(ring_duration)) {
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for ring_duration");
         }
-        info.ring_duration = std::exp(-std::exp(parms[parms_idx])) * 6.0 + 3.0;
+        info.ring_duration = std::exp(-std::exp(parms[parms_idx])) * 8.0 + 1.0;
         parms_idx++;
     } else info.ring_duration = ring_duration;
 
