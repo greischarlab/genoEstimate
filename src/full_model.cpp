@@ -29,8 +29,8 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
 
     ArcherInfo info;
 
-    if (parms.size() < 6) {
-        stop("parms must have length >= 6");
+    if (parms.size() < 5) {
+        stop("parms must have length >= 5");
     }
 
     // param 1: offset [0, 0.5]
@@ -55,7 +55,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
     double start_age1 = std::exp(-std::exp(parms[4]));
     info.start_age = start_age1 * 5;
 
-    int parms_idx = 6;
+    int parms_idx = 5;
 
     // param 6: pfCycleLength [22, 26]
     if (Rcpp::NumericVector::is_na(pfCycleLength)) { // if there's no values specified for pfCycleLength
