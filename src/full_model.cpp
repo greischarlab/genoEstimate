@@ -24,12 +24,13 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
                              const double& pfCycleLength,
                              const double& inflec,
                              const double& ring_duration,
+                             const double& troph_end,
                              const double& seq_upper) {
 
     ArcherInfo info;
 
-    if (parms.size() < 5) {
-        stop("parms must have length >= 5");
+    if (parms.size() < 6) {
+        stop("parms must have length >= 6");
     }
 
     // param 1: offset [0, 0.5]
@@ -54,7 +55,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
     double start_age1 = std::exp(-std::exp(parms[4]));
     info.start_age = start_age1 * 5;
 
-    int parms_idx = 5;
+    int parms_idx = 6;
 
     // param 6: pfCycleLength [22, 26]
     if (Rcpp::NumericVector::is_na(pfCycleLength)) { // if there's no values specified for pfCycleLength
@@ -93,6 +94,15 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.seq_upper = seq_upper;
 
+    // param 10: troph end age [2, 23]
+    if (Rcpp::NumericVector::is_na(troph_end)) {
+        if (parms.size() <= parms_idx) { // if not proper length...
+            stop("Not enough items for troph end age");
+        }
+        info.troph_end = std::exp(-std::exp(parms[parms_idx]))*21 + 2;
+        parms_idx++;
+    } else info.troph_end = troph_end;
+
 
     return info;
 
@@ -108,13 +118,14 @@ NumericVector extract_parms(const NumericVector& parms,
                             const double& pfCycleLength = NA_REAL,
                             const double& inflec = NA_REAL,
                             const double& ring_duration = NA_REAL,
-                            const double& seq_upper = NA_REAL) {
+                            const double& seq_upper = NA_REAL,
+                            const double& troph_end = NA_REAL) {
 
-    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper, troph_end);
 
     NumericVector fit_parms = {info.offset, info.R, static_cast<double>(info.n), info.I0,
                                info.start_age, info.pfCycleLength, info.inflec,
-                               info.ring_duration, info.seq_upper};
+                               info.ring_duration, info.seq_upper, info.troph_end};
 
     return fit_parms;
 
@@ -141,6 +152,8 @@ NumericVector extract_parms(const NumericVector& parms,
 //'     Defaults to `NA`, which results in it being extracted from `parms`.
 //' @param seq_upper Single numeric indicating the upper bound of the sequestration curve.
 //'     Defaults to `NA`, which results in it being extracted from `parms`.
+//' @param troph_end Single numeric indicating the end age of trophs.
+//'     Defaults to `NA`, which results in it being extracted from `parms`.
 //' @param circ_return Single logical indicating whether to output
 //'     circulating iRBCs.
 //'     Defaults to `FALSE`.
@@ -164,12 +177,15 @@ SEXP archer_fitN_odeint(NumericVector parms,
                         const double& inflec = NA_REAL,
                         const double& ring_duration = NA_REAL,
                         const double& seq_upper = NA_REAL,
+                        const double& troph_end = NA_REAL,
                         const bool& circ_return = false,
                         const bool& seq_return = false,
                         const bool& ring_prop_return = false,
+                        const bool& troph_prop_return = false,
+                        const bool& schiz_prop_return = false,
                         const bool& output_full_return = false) {
 
-    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper, troph_end);
 
     int n = info.n;
     double n_dbl = n;
@@ -233,13 +249,23 @@ SEXP archer_fitN_odeint(NumericVector parms,
 
 
     arma::vec circ_iRBC_rep = repeat_subvector(circ_iRBC_unique, geno);
-    // Rcpp::Rcout << "circ_iRBC_rep: " << circ_iRBC_rep << std::endl;
 
+    // calculate ring start and end stage
     double ring_first_stage = std::round(info.start_age / info.pfCycleLength * n_dbl) + 1;
     double ring_last_stage = std::round((info.start_age + info.ring_duration) / info.pfCycleLength * n_dbl) + 1;
-    //Rcpp::Rcout << "ring_last_stage: " << ring_last_stage << std::endl;
 
+
+    // calculate troph start and end stage
+    double troph_first_stage = ring_last_stage + 1;
+    double troph_last_stage = std::round((info.troph_end) / info.pfCycleLength * n_dbl) + 1;
+
+    // calculate schizont start and end stage
+    double schiz_first_stage = troph_last_stage + 1;
+    double schiz_last_stage = n_dbl;
+
+    // in case of ring stage being too short
     if (ring_last_stage <= 2) ring_last_stage = 3;
+
 
     // low resolution ring_prop_estim
     arma::vec circ_ring_tot(numRows_u, arma::fill::zeros);
@@ -260,10 +286,58 @@ SEXP archer_fitN_odeint(NumericVector parms,
 
     arma::vec ring_prop_estim_h = circ_ring_tot_h/circ_iRBC;
 
-    // repeat the low resolution ring_prop_estim
+    // repeat the low resolution ring_prop_estim for calculating SSE
     arma::vec ring_prop_rep = repeat_subvector(ring_prop_estim, geno);
 
+
+
+    // low resolution troph_prop_estim
+    arma::vec circ_troph_tot(numRows_u, arma::fill::zeros);
+
+    for (int j = troph_first_stage; j < troph_last_stage; ++j) {
+        circ_troph_tot += subsetMatrix.col(j);
+    }
+
+    arma::vec troph_prop_estim = circ_troph_tot/circ_iRBC_unique;
+
+
+    //  high resolution troph_prop_estim
+    arma::vec circ_troph_tot_h(numRows, arma::fill::zeros);
+
+    for (int j = troph_first_stage; j < troph_last_stage; ++j) {
+        circ_troph_tot_h += odeint_output.col(j);
+    }
+
+    arma::vec troph_prop_estim_h = circ_troph_tot_h/circ_iRBC;
+
+    // repeat the low resolution ring_prop_estim for calculating SSE
+    arma::vec troph_prop_rep = repeat_subvector(troph_prop_estim, geno);
+
+
+    // low resolution schiz_prop_estim
+    arma::vec circ_schiz_tot(numRows_u, arma::fill::zeros);
+
+    for (int j = schiz_first_stage; j < schiz_last_stage; ++j) {
+        circ_schiz_tot += subsetMatrix.col(j);
+    }
+
+    arma::vec schiz_prop_estim = circ_schiz_tot/circ_iRBC_unique;
+
+
+    //  high resolution schiz_prop_estim
+    arma::vec circ_schiz_tot_h(numRows, arma::fill::zeros);
+
+    for (int j = schiz_first_stage; j < schiz_last_stage; ++j) {
+        circ_schiz_tot_h += odeint_output.col(j);
+    }
+
+    arma::vec schiz_prop_estim_h = circ_schiz_tot_h/circ_iRBC;
+
+    // repeat the low resolution schiz_prop_estim for calculating SSE
+    arma::vec schiz_prop_rep = repeat_subvector(schiz_prop_estim, geno);
+
     // Calculate SSE
+    // calculate circ iRBCs SSE:
     NumericVector circ_data = data["Circ"];
     arma::vec transformed_data(circ_data.size());
 
@@ -294,6 +368,7 @@ SEXP archer_fitN_odeint(NumericVector parms,
     double sse_iRBC = arma::accu(squared_diff_iRBC);
     //Rcpp::Rcout << "sse_iRBC: " << sse_iRBC << std::endl;
 
+    // calculate ring prop sse:
     NumericVector ring_data = data["ring_prop"];
 
     //Rcpp::Rcout << "ring_data: " << ring_data << std::endl;
@@ -310,7 +385,38 @@ SEXP archer_fitN_odeint(NumericVector parms,
     double sse_ring = arma::accu(squared_diff_ring);
     //Rcpp::Rcout << "sse_ring: " << sse_ring << std::endl;
 
-    double sse = sse_iRBC + sse_ring;
+
+    // calculate troph prop sse:
+    NumericVector troph_data = data["troph_prop"];
+
+    arma::vec squared_diff_troph(troph_data.size());
+    for (int i = 0; i < troph_data.size(); ++i) {
+        if (NumericVector::is_na(troph_data[i])) {
+            squared_diff_troph[i] = 0.0;
+        } else {
+            squared_diff_troph[i] = std::pow(troph_data[i] - troph_prop_rep[i], 2U);
+        }
+    }
+
+    double sse_troph = arma::accu(squared_diff_troph);
+
+
+    // calculate schiz prop sse:
+    NumericVector schiz_data = data["schiz_prop"];
+
+    arma::vec squared_diff_schiz(schiz_data.size());
+    for (int i = 0; i < schiz_data.size(); ++i) {
+        if (NumericVector::is_na(schiz_data[i])) {
+            squared_diff_schiz[i] = 0.0;
+        } else {
+            squared_diff_schiz[i] = std::pow(schiz_data[i] - schiz_prop_rep[i], 2U);
+        }
+    }
+
+    double sse_schiz = arma::accu(squared_diff_schiz);
+
+
+    double sse = sse_iRBC + sse_ring + sse_troph + sse_schiz;
 
 
     // ---- RETURN MODE ----
@@ -318,10 +424,12 @@ SEXP archer_fitN_odeint(NumericVector parms,
     if (circ_return) n_trues++;
     if (seq_return) n_trues++;
     if (ring_prop_return) n_trues++;
+    if (troph_prop_return) n_trues++;
+    if (schiz_prop_return) n_trues++;
     if (output_full_return) n_trues++;
     if (n_trues > 1) {
         std::string err = "Of the arguments circ_return, seq_return, ";
-        err += "ring_prop_return, and output_full_return, ";
+        err += "ring_prop_return, troph_prop_return, schiz_prop_return, and output_full_return, ";
         err += "at most 1 is allowed to be true.";
         stop(err.c_str());
     }
@@ -329,6 +437,8 @@ SEXP archer_fitN_odeint(NumericVector parms,
     if (circ_return == true) return wrap(circ_iRBC);
     if (seq_return == true) return wrap(seq_iRBC);
     if (ring_prop_return == true) return wrap(ring_prop_estim_h);
+    if (troph_prop_return == true) return wrap(troph_prop_estim_h);
+    if (schiz_prop_return == true) return wrap(schiz_prop_estim_h);
     if (output_full_return == true) return wrap(odeint_output);
 
     return wrap(sse);

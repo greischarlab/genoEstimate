@@ -36,6 +36,7 @@ struct ArcherInfo {
   double inflec;
   double ring_duration;
   double seq_upper;
+  double troph_end;
 
 };
 
