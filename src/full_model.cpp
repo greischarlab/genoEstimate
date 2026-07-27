@@ -24,8 +24,8 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
                              const double& pfCycleLength,
                              const double& inflec,
                              const double& ring_duration,
-                             const double& troph_end,
-                             const double& seq_upper) {
+                             const double& seq_upper,
+                             const double& troph_end) {
 
     ArcherInfo info;
 
