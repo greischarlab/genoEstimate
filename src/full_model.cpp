@@ -24,8 +24,7 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
                              const double& pfCycleLength,
                              const double& inflec,
                              const double& ring_duration,
-                             const double& seq_upper,
-                             const double& troph_end) {
+                             const double& seq_upper) {
 
     ArcherInfo info;
 
@@ -51,9 +50,8 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
     // param 4: I0
     info.I0 = std::exp((parms[3]));
 
-    // param 5: start age [0, 5]
-    double start_age1 = std::exp(-std::exp(parms[4]));
-    info.start_age = start_age1 * 5;
+    // param 5: troph end age [2, 23]
+    info.troph_end = std::exp(-std::exp(parms[4]))*21 + 2;
 
     int parms_idx = 5;
 
@@ -76,12 +74,12 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         parms_idx++;
     } else info.inflec = inflec;
 
-    // param 8: ring_duration [1, 9]
+    // param 8: ring_duration [3, 9]
     if (Rcpp::NumericVector::is_na(ring_duration)) {
         if (parms.size() <= parms_idx) { // if not proper length...
             stop("Not enough items for ring_duration");
         }
-        info.ring_duration = std::exp(-std::exp(parms[parms_idx])) * 8.0 + 1.0;
+        info.ring_duration = std::exp(-std::exp(parms[parms_idx])) * 6.0 + 3.0;
         parms_idx++;
     } else info.ring_duration = ring_duration;
 
@@ -93,16 +91,6 @@ ArcherInfo extract_parms_cpp(const NumericVector& parms,
         info.seq_upper = std::exp(-std::exp(parms[parms_idx]))*0.75 + 0.25;
         parms_idx++;
     } else info.seq_upper = seq_upper;
-
-    // param 10: troph end age [2, 23]
-    if (Rcpp::NumericVector::is_na(troph_end)) {
-        if (parms.size() <= parms_idx) { // if not proper length...
-            stop("Not enough items for troph end age");
-        }
-        info.troph_end = std::exp(-std::exp(parms[parms_idx]))*21 + 2;
-        parms_idx++;
-    } else info.troph_end = troph_end;
-
 
     return info;
 
@@ -118,14 +106,13 @@ NumericVector extract_parms(const NumericVector& parms,
                             const double& pfCycleLength = NA_REAL,
                             const double& inflec = NA_REAL,
                             const double& ring_duration = NA_REAL,
-                            const double& seq_upper = NA_REAL,
-                            const double& troph_end = NA_REAL) {
+                            const double& seq_upper = NA_REAL) {
 
-    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper, troph_end);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper);
 
     NumericVector fit_parms = {info.offset, info.R, static_cast<double>(info.n), info.I0,
-                               info.start_age, info.pfCycleLength, info.inflec,
-                               info.ring_duration, info.seq_upper, info.troph_end};
+                               info.troph_end, info.pfCycleLength, info.inflec,
+                               info.ring_duration, info.seq_upper};
 
     return fit_parms;
 
@@ -177,7 +164,6 @@ SEXP archer_fitN_odeint(NumericVector parms,
                         const double& inflec = NA_REAL,
                         const double& ring_duration = NA_REAL,
                         const double& seq_upper = NA_REAL,
-                        const double& troph_end = NA_REAL,
                         const bool& circ_return = false,
                         const bool& seq_return = false,
                         const bool& ring_prop_return = false,
@@ -185,7 +171,7 @@ SEXP archer_fitN_odeint(NumericVector parms,
                         const bool& schiz_prop_return = false,
                         const bool& output_full_return = false) {
 
-    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper, troph_end);
+    ArcherInfo info = extract_parms_cpp(parms, pfCycleLength, inflec, ring_duration, seq_upper);
 
     int n = info.n;
     double n_dbl = n;
@@ -251,8 +237,10 @@ SEXP archer_fitN_odeint(NumericVector parms,
     arma::vec circ_iRBC_rep = repeat_subvector(circ_iRBC_unique, geno);
 
     // calculate ring start and end stage
-    double ring_first_stage = std::round(info.start_age / info.pfCycleLength * n_dbl) + 1;
-    double ring_last_stage = std::round((info.start_age + info.ring_duration) / info.pfCycleLength * n_dbl) + 1;
+    double ring_first_stage = 0;
+        //std::round(info.start_age / info.pfCycleLength * n_dbl) + 1;
+    double ring_last_stage = std::round(info.ring_duration / info.pfCycleLength * n_dbl) + 1;
+        //std::round((info.start_age + info.ring_duration) / info.pfCycleLength * n_dbl) + 1;
 
 
     // calculate troph start and end stage

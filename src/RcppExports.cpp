@@ -46,8 +46,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // extract_parms
-NumericVector extract_parms(const NumericVector& parms, const double& pfCycleLength, const double& inflec, const double& ring_duration, const double& seq_upper, const double& troph_end);
-RcppExport SEXP _genoEstimate_extract_parms(SEXP parmsSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP seq_upperSEXP, SEXP troph_endSEXP) {
+NumericVector extract_parms(const NumericVector& parms, const double& pfCycleLength, const double& inflec, const double& ring_duration, const double& seq_upper);
+RcppExport SEXP _genoEstimate_extract_parms(SEXP parmsSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP seq_upperSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -56,14 +56,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double& >::type inflec(inflecSEXP);
     Rcpp::traits::input_parameter< const double& >::type ring_duration(ring_durationSEXP);
     Rcpp::traits::input_parameter< const double& >::type seq_upper(seq_upperSEXP);
-    Rcpp::traits::input_parameter< const double& >::type troph_end(troph_endSEXP);
-    rcpp_result_gen = Rcpp::wrap(extract_parms(parms, pfCycleLength, inflec, ring_duration, seq_upper, troph_end));
+    rcpp_result_gen = Rcpp::wrap(extract_parms(parms, pfCycleLength, inflec, ring_duration, seq_upper));
     return rcpp_result_gen;
 END_RCPP
 }
 // archer_fitN_odeint
-SEXP archer_fitN_odeint(NumericVector parms, DataFrame data, const bool& geno, const double& pfCycleLength, const double& inflec, const double& ring_duration, const double& seq_upper, const double& troph_end, const bool& circ_return, const bool& seq_return, const bool& ring_prop_return, const bool& troph_prop_return, const bool& schiz_prop_return, const bool& output_full_return);
-RcppExport SEXP _genoEstimate_archer_fitN_odeint(SEXP parmsSEXP, SEXP dataSEXP, SEXP genoSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP seq_upperSEXP, SEXP troph_endSEXP, SEXP circ_returnSEXP, SEXP seq_returnSEXP, SEXP ring_prop_returnSEXP, SEXP troph_prop_returnSEXP, SEXP schiz_prop_returnSEXP, SEXP output_full_returnSEXP) {
+SEXP archer_fitN_odeint(NumericVector parms, DataFrame data, const bool& geno, const double& pfCycleLength, const double& inflec, const double& ring_duration, const double& seq_upper, const bool& circ_return, const bool& seq_return, const bool& ring_prop_return, const bool& troph_prop_return, const bool& schiz_prop_return, const bool& output_full_return);
+RcppExport SEXP _genoEstimate_archer_fitN_odeint(SEXP parmsSEXP, SEXP dataSEXP, SEXP genoSEXP, SEXP pfCycleLengthSEXP, SEXP inflecSEXP, SEXP ring_durationSEXP, SEXP seq_upperSEXP, SEXP circ_returnSEXP, SEXP seq_returnSEXP, SEXP ring_prop_returnSEXP, SEXP troph_prop_returnSEXP, SEXP schiz_prop_returnSEXP, SEXP output_full_returnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,14 +73,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double& >::type inflec(inflecSEXP);
     Rcpp::traits::input_parameter< const double& >::type ring_duration(ring_durationSEXP);
     Rcpp::traits::input_parameter< const double& >::type seq_upper(seq_upperSEXP);
-    Rcpp::traits::input_parameter< const double& >::type troph_end(troph_endSEXP);
     Rcpp::traits::input_parameter< const bool& >::type circ_return(circ_returnSEXP);
     Rcpp::traits::input_parameter< const bool& >::type seq_return(seq_returnSEXP);
     Rcpp::traits::input_parameter< const bool& >::type ring_prop_return(ring_prop_returnSEXP);
     Rcpp::traits::input_parameter< const bool& >::type troph_prop_return(troph_prop_returnSEXP);
     Rcpp::traits::input_parameter< const bool& >::type schiz_prop_return(schiz_prop_returnSEXP);
     Rcpp::traits::input_parameter< const bool& >::type output_full_return(output_full_returnSEXP);
-    rcpp_result_gen = Rcpp::wrap(archer_fitN_odeint(parms, data, geno, pfCycleLength, inflec, ring_duration, seq_upper, troph_end, circ_return, seq_return, ring_prop_return, troph_prop_return, schiz_prop_return, output_full_return));
+    rcpp_result_gen = Rcpp::wrap(archer_fitN_odeint(parms, data, geno, pfCycleLength, inflec, ring_duration, seq_upper, circ_return, seq_return, ring_prop_return, troph_prop_return, schiz_prop_return, output_full_return));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -89,8 +87,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_genoEstimate_beta_starts", (DL_FUNC) &_genoEstimate_beta_starts, 4},
     {"_genoEstimate_constPMR_gammaN_ode", (DL_FUNC) &_genoEstimate_constPMR_gammaN_ode, 10},
-    {"_genoEstimate_extract_parms", (DL_FUNC) &_genoEstimate_extract_parms, 6},
-    {"_genoEstimate_archer_fitN_odeint", (DL_FUNC) &_genoEstimate_archer_fitN_odeint, 14},
+    {"_genoEstimate_extract_parms", (DL_FUNC) &_genoEstimate_extract_parms, 5},
+    {"_genoEstimate_archer_fitN_odeint", (DL_FUNC) &_genoEstimate_archer_fitN_odeint, 13},
     {NULL, NULL, 0}
 };
 

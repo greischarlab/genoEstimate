@@ -31,12 +31,11 @@ struct ArcherInfo {
   double R;
   int n;
   double I0;
-  double start_age;
+  double troph_end;
   double pfCycleLength;
   double inflec;
   double ring_duration;
   double seq_upper;
-  double troph_end;
 
 };
 
